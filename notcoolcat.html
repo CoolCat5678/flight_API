@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="a"></div>
+
+    <hr/>
+
+    <div class="b"></div>
+
+
+    <script>
+        const diva = document.querySelector('.a');
+        const divb = document.querySelector('.b');
+
+        const url = "https://partners.api.skyscanner.net/apiservices/v3/flights/live/search/create";
+
+        fetch(url, {
+            method: "POST",
+            body: JSON.stringify({
+                "query": {
+                    "market": "TW",
+                    "locale": "zh-TW",
+                    "currency": "TWD",
+                    "queryLegs": [
+                        {
+                            "originPlaceId": {
+                                "iata": "NRT"
+                            },
+                            "destinationPlaceId": {
+                                "iata": "TPE"
+                            },
+                            "date": {
+                                "year": "2022",
+                                "month": "12",
+                                "day": "16"
+                            }
+                        }
+                    ],
+                    "adults": "1",
+                    "cabinClass": "CABIN_CLASS_ECONOMY"
+                }
+            }),
+            headers: {
+                "x-api-key": "prtl6749387986743898559646983194"
+            }
+        })
+            .then((response) => response.json())
+            .then((r) => {
+
+                var U = r.content.results.itineraries;
+
+                for (let key in U){
+                    P = parseInt(U[key].pricingOptions[0].price.amount)
+                    diva.innerHTML += `${key} : 價格 = ${P / 1000} : ${U[key].pricingOptions[0].agentIds}<br>`
+                }
+
+                var x = r.content.results.agents;
+
+                for (let key in x){
+                    divb.innerHTML += `${key} : ${x[key].name} <br/> <img src="${x[key].imageUrl}"> <br/>`
+                }
+            })
+            .catch((error) => {
+                console.log("error");
+            })
+    </script>
+</body>
+
+</html>
