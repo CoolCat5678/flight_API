@@ -11,7 +11,7 @@
 <body>
     <div class="a"></div>
 
-    <hr/>
+    <hr />
 
     <div class="b"></div>
 
@@ -40,7 +40,7 @@
                             "date": {
                                 "year": "2022",
                                 "month": "12",
-                                "day": "16"
+                                "day": "17"
                             }
                         }
                     ],
@@ -55,17 +55,60 @@
             .then((response) => response.json())
             .then((r) => {
 
-                var U = r.content.results.itineraries;
+                var RI = r.content.results.itineraries;
+                var RCR = r.content.results;
 
-                for (let key in U){
-                    P = parseInt(U[key].pricingOptions[0].price.amount)
-                    diva.innerHTML += `${key} : 價格 = ${P / 1000} : ${U[key].pricingOptions[0].agentIds}<br>`
-                }
+                for (let Fnum in RI) {
 
-                var x = r.content.results.agents;
+                    // P = 價格
+                    var P = parseInt(RI[Fnum].pricingOptions[0].price.amount)
+                    //agid = 購買網站
+                    var agid = RI[Fnum].pricingOptions[0].agentIds[0];
 
-                for (let key in x){
-                    divb.innerHTML += `${key} : ${x[key].name} <br/> <img src="${x[key].imageUrl}"> <br/>`
+                    //agicon = 購買網站圖片
+                    var agicon = r.content.results.agents[agid].imageUrl;
+                    // buyLink 購買連結
+                    var buyLink = RI[Fnum].pricingOptions[0].items[0].deepLink;
+
+                    // 出發時間
+                    var Fdtime = RCR.legs[Fnum].departureDateTime;
+                    // 抵達時間
+                    var Fatime = RCR.legs[Fnum].arrivalDateTime;
+                    //飛行時間(分鐘)
+                    var Ftime = RCR.legs[Fnum].durationInMinutes;
+
+                    // 出發地點
+                    var OrgP = RCR.legs[Fnum].originPlaceId;
+                    // 抵達地點
+                    var DesP = RCR.legs[Fnum].destinationPlaceId;
+
+                    // 出發地點中文英文
+                    var OrgPName = RCR.places[OrgP].name;
+                    var OrgPNameIata = RCR.places[OrgP].iata;
+                    // 抵達地點中文
+                    var DesPName = RCR.places[DesP].name;
+                    var DesPNameIata = RCR.places[DesP].iata;
+                    
+
+
+                    // 發售公司
+                    var Fmc = RCR.legs[Fnum].marketingCarrierIds[0];
+                    // 操作公司
+                    var Foc = RCR.legs[Fnum].operatingCarrierIds[0];
+                    // 航空公司中文名稱(取操作)
+                    var FocName = RCR.carriers[Foc].name;
+                    // 航空公司圖片(取操作)
+                    var FocImg = RCR.carriers[Foc].imageUrl;
+
+
+
+                    // div顯示
+                    diva.innerHTML += `${Fnum} : 價格 = ${P / 1000} : <br/>
+                    航空公司 = ${FocName} <img src="${FocImg}"> <br/>
+                    <img src="${agicon}"> <a href="${buyLink}">購買連結</a> <br/>
+                    出發地點: ${OrgPName} ${OrgPNameIata} 抵達地點: ${DesPName} ${DesPNameIata}<br/>
+                    飛行時間 ${Ftime}
+                    <hr/>`
                 }
             })
             .catch((error) => {
